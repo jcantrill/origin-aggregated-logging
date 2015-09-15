@@ -11,7 +11,7 @@ sleep 20; curl -q -XPUT 'http://localhost:9200/searchguard/ac/ac?pretty' -d '
     {
       "__Comment__": "Default is to deny all access",
       "filters_bypass": [],
-      "filters_execute": []
+      "filters_execute": ["actionrequestfilter.none"]
     },
     {
       "__Comment__": "This is so that fluentd can only write",

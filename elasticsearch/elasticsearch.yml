@@ -9,11 +9,22 @@ searchguard.allow_all_from_loopback: false
 ############################# Search-Guard ################################
 #searchguard.check_for_root: false
 
+#############################################################################################
+# X-Forwarded-For (XFF) header                                                              #
+#                                                                                           #
+#############################################################################################
+# X-Forwarded-For (XFF) header
+# If you have a http proxy in front of elasticsearch you have to configure this options to handle XFF properly
+#searchguard.http.xforwardedfor.header: X-Forwarded-For
+#searchguard.http.xforwardedfor.trustedproxies: null
+#searchguard.http.xforwardedfor.enforce: false
+
 ######################################
 # Authentication backend             #
 #                                    #
 ######################################
-searchguard.authentication.authentication_backend.impl: com.floragunn.searchguard.authentication.backend.simple.SettingsBasedAuthenticationBackend
+#searchguard.authentication.authentication_backend.impl: com.floragunn.searchguard.authentication.backend.simple.SettingsBasedAuthenticationBackend
+searchguard.authentication.authentication_backend.impl: com.floragunn.searchguard.authentication.backend.simple.AlwaysSucceedAuthenticationBackend
 
 ######################################
 # Authorization backend (authorizer) #
@@ -25,7 +36,15 @@ searchguard.authentication.authorizer.impl: com.floragunn.searchguard.authorizat
 # HTTP authentication method         #
 #                                    #
 ######################################
-searchguard.authentication.http_authenticator.impl: com.floragunn.searchguard.authentication.http.basic.HTTPBasicAuthenticator
+searchguard.authentication.http_authenticator.impl: com.floragunn.searchguard.authentication.http.proxy.HTTPProxyAuthenticator
+
+#####################################################
+# HTTP proxy authenticator configuration
+# Header name which contains the username
+searchguard.authentication.proxy.header: X-Authenticated-User
+# Array of trusted IP addresses (this are typically your proxy server(s))
+searchguard.authentication.proxy.trusted_ips: ["127.0.0.1"]
+#####################################################
 
 #####################################
 # HTTPS settings                    #
@@ -60,7 +79,10 @@ searchguard.authentication.authorization.settingsdb.roles.kibana: ["kibana"]
 
 ##### roles
 # Configure the actionrequestfilter to allow or forbid action 
-searchguard.actionrequestfilter.names: ["readonly", "fluentd", "kibana"]
+searchguard.actionrequestfilter.names: ["readonly", "fluentd", "kibana","none"]
+
+searchguard.actionrequestfilter.none.forbidden_actions: ["*"]
+
 searchguard.actionrequestfilter.readonly.allowed_actions: ["indices:data/read/*", "*monitor*"]
 searchguard.actionrequestfilter.readonly.forbidden_actions: ["cluster:*", "indices:admin*"]
 
