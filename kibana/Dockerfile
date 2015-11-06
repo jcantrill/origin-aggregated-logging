@@ -18,15 +18,9 @@ RUN   wget -q https://download.elastic.co/kibana/kibana/kibana-4.1.1-linux-x64.t
       mv kibana-4.1.1-linux-x64/* /opt/app-root/src/ && \
       rm -rf kibana-4.1.1-linux-x64* && \
       mkdir -m 755 /opt/origin-kibana && \
-      git clone --branch master --depth 1 https://github.com/openshift/origin-kibana.git /opt/origin-kibana && \
+      git clone --branch master --depth 1 https://github.com/jcantrill/origin-kibana.git /opt/origin-kibana && \
       ln -s /opt/origin-kibana/lib /opt/app-root/src/src/public/plugins/origin-kibana && \
       cd /opt/origin-kibana/ && \
-      yum install -y npm --nogpgcheck && \
-      npm install --ignore-scripts && \
-      ./node_modules/bower/bin/bower install --allow-root && \
-      ./node_modules/grunt-cli/bin/grunt && \
-      rm -rf node_modules && \
-      yum erase npm nodejs -y && \
       chmod -R og+w /opt/app-root/src
 
 COPY kibana.yml /opt/app-root/src/config/kibana.yml
