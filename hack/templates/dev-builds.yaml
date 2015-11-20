@@ -70,8 +70,10 @@ objects:
   spec:
     output:
       to:
-        kind: ImageStreamTag
-        name: logging-deployment:latest
+        kind: DockerImage
+        name: docker.io/openshift/origin-logging-deployment:latest
+      pushSecret:
+        name: dockerhub
     resources: {}
     source:
       contextDir: deployment
@@ -97,8 +99,10 @@ objects:
   spec:
     output:
       to:
-        kind: ImageStreamTag
-        name: logging-elasticsearch:latest
+        kind: DockerImage
+        name: docker.io/openshift/origin-logging-elasticsearch:latest
+      pushSecret:
+        name: dockerhub
     resources: {}
     source:
       contextDir: elasticsearch
@@ -124,8 +128,10 @@ objects:
   spec:
     output:
       to:
-        kind: ImageStreamTag
-        name: logging-fluentd:latest
+        kind: DockerImage
+        name: docker.io/openshift/origin-logging-fluentd:latest
+      pushSecret:
+        name: dockerhub
     resources: {}
     source:
       contextDir: fluentd
@@ -151,8 +157,10 @@ objects:
   spec:
     output:
       to:
-        kind: ImageStreamTag
-        name: logging-kibana:latest
+        kind: DockerImage
+        name: docker.io/openshift/origin-logging-kibana:latest
+      pushSecret:
+        name: dockerhub
     resources: {}
     source:
       contextDir: kibana
@@ -177,8 +185,10 @@ objects:
   spec:
     output:
       to:
-        kind: ImageStreamTag
-        name: logging-auth-proxy:latest
+        kind: DockerImage
+        name: docker.io/openshift/origin-logging-auth-proxy:latest
+      pushSecret:
+        name: dockerhub
     resources: {}
     source:
       git:
