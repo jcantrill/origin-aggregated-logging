@@ -32,6 +32,7 @@ ADD elasticsearch.repo /etc/yum.repos.d/elasticsearch.repo
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch && \
     yum install -y --setopt=tsflags=nodocs \
                 java-1.8.0-openjdk-headless \
+                openssl \
                 elasticsearch-${ES_VER} && \
     yum clean all
 
@@ -39,6 +40,7 @@ ADD sgconfig/ ${HOME}/sgconfig/
 ADD index_templates/ /usr/share/elasticsearch/index_templates/
 ADD install.sh ${HOME}/
 RUN ${HOME}/install.sh
+ADD init-keystores.sh ${HOME}/
 ADD run.sh ${HOME}/
 ADD es_util /usr/local/bin
 

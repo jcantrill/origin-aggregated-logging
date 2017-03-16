@@ -90,8 +90,7 @@ done
 
 if [ $timeouted = true ] ; then
     echo -n "[timeout] "
-else
-    rm -f $LOG_FILE
+else rm -f $LOG_FILE
     return 0
 fi
 echo "failed"
@@ -135,6 +134,8 @@ verify_or_add_index_templates() {
     done
     shopt -u failglob
 }
+
+source ./init-keystores.sh
 
 verify_or_add_index_templates &
 
