@@ -3,6 +3,7 @@
 set -euo pipefail
 
 export KUBERNETES_AUTH_TRYKUBECONFIG="false"
+ES_CONFIG_FILE=$ES_CONF/elasticsearch.yml
 ES_REST_BASEURL=https://localhost:9200
 LOG_FILE=elasticsearch_connect_log.txt
 RETRY_COUNT=300		# how many times
@@ -134,6 +135,12 @@ verify_or_add_index_templates() {
     done
     shopt -u failglob
 }
+
+#cp readonly configs to expected location
+if [ -d /elasticsearch/config ] ; then
+  cp /elasticsearch/config/* $ES_CONF
+  chmod g+rw,o+rw $ES_CONFIG_FILE
+fi
 
 source ./init-keystores.sh
 
