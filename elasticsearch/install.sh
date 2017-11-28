@@ -23,7 +23,7 @@ mkdir /elasticsearch
 mkdir -p $ES_CONF
 chmod -R og+w $ES_CONF ${ES_HOME} ${HOME} /elasticsearch
 chmod -R o+rx /etc/elasticsearch
-chmod +x ${ES_HOME}/plugins/search-guard-5/tools/sgadmin.sh
+chmod +x ${ES_HOME}/plugins/openshift-elasticsearch/sgadmin.sh
 
 # document needed by sg plugin to properly initialize
 passwd=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)

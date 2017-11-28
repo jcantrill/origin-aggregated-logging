@@ -27,9 +27,8 @@ ENV ES_CLOUD_K8S_VER=5.5.2 \
 ARG ES_CLOUD_K8S_VER=5.5.2
 ARG OSE_ES_VER=2.4.4.16
 ARG ES_CLOUD_K8S_URL
+ARG OSE_ES_URL
 ARG PROMETHEUS_EXPORTER_URL
-ARG SG_VER=5.5.2-16
-ARG SG_URL
 
 LABEL io.k8s.description="Elasticsearch container for EFK aggregated logging storage" \
       io.k8s.display-name="Elasticsearch ${ES_VER}" \
@@ -55,7 +54,8 @@ ADD probe/ ${ES_HOME}/probe/
 ADD run.sh prep-install.${RELEASE_STREAM} install.sh ${HOME}/
 COPY utils/** /usr/local/bin/
 RUN ln -s /usr/local/bin/logging ${HOME}/logging
-
+ENV OSE_ES_URL=file:///openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip
+ADD openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip /
 RUN ${HOME}/install.sh
 
 WORKDIR ${HOME}
