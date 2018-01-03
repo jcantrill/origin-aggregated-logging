@@ -68,8 +68,8 @@ if [[ "${INSTANCE_RAM:-}" =~ $regex ]]; then
         error "A minimum of $(($MIN_ES_MEMORY_BYTES/$BYTES_PER_MEG))m is required but only $(($num/$BYTES_PER_MEG))m is available or was specified"
         exit 1
     fi
-    export ES_JAVA_OPTS="${ES_JAVA_OPTS:-} -Xms$(($num/2/BYTES_PER_MEG))m -Xmx$(($num/2/BYTES_PER_MEG))m"
-    echo "ES_JAVA_OPTS: '${ES_JAVA_OPTS}'"
+    # Set JVM HEAP size to half of available space
+    export ES_JAVA_OPTS="${ES_JAVA_OPTS:-} -Xms$(($num/2/BYTES_PER_MEG))m -Xmx$(($num/2/BYTES_PER_MEG))m ${ES_JAVA_OPTS:-}"
 else
     error "INSTANCE_RAM env var is invalid: ${INSTANCE_RAM:-}"
     exit 1
@@ -121,7 +121,6 @@ verify_or_add_index_templates() {
     do
         template=`basename $template_file`
         # Check if index template already exists
-	info Adding template $template
         response_code=$(curl ${DEBUG:+-v} -s --head \
             --cacert $secret_dir/admin-ca \
             --cert $secret_dir/admin-cert \
@@ -132,8 +131,8 @@ verify_or_add_index_templates() {
         if [ $response_code == "200" ]; then
             info "Index template '$template' already present in ES cluster"
         else
-            echo "Create index template '$template'"
-            curl -v -s -X PUT \
+            info "Create index template '$template'"
+            curl ${DEBUG:+-v} -s -X PUT \
                 --cacert $secret_dir/admin-ca \
                 --cert $secret_dir/admin-cert \
                 --key  $secret_dir/admin-key \
@@ -141,7 +140,7 @@ verify_or_add_index_templates() {
                 $ES_REST_BASEURL/_template/$template
         fi
     done
-#    shopt -u failglob
+    shopt -u failglob
     info Finished adding index templates
 }
 
@@ -151,6 +150,8 @@ cp /usr/share/java/elasticsearch/config/* /etc/elasticsearch/
 
 HEAP_DUMP_LOCATION="${HEAP_DUMP_LOCATION:-/elasticsearch/persistent/hdump.prof}"
 info Setting heap dump location "$HEAP_DUMP_LOCATION"
-export JAVA_OPTS="${JAVA_OPTS:-} -XX:HeapDumpPath=$HEAP_DUMP_LOCATION"
+export ES_JAVA_OPTS="${ES_JAVA_OPTS:-} -XX:HeapDumpPath=$HEAP_DUMP_LOCATION"
 
-exec ${ES_HOME}/bin/elasticsearch -Epath.conf=$ES_CONF
+info "ES_JAVA_OPTS: '${ES_JAVA_OPTS}'"
+
+exec ${ES_HOME}/bin/elasticsearch --path.conf=$ES_CONF --security.manager.enabled false

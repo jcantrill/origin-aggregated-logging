@@ -3,21 +3,13 @@
 set -ex
 set -o nounset
 
-yum -y install https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VER}.rpm
-
 source ${HOME}/prep-install.${RELEASE_STREAM}
 
 echo "ES plugins: ${es_plugins[@]}"
 for es_plugin in ${es_plugins[@]}
 do
-  ${ES_HOME}/bin/elasticsearch-plugin install  $es_plugin
+  ${ES_HOME}/bin/elasticsearch-plugin install -b $es_plugin
 done
-
-
-#fix location from config
-ln -s ${ES_HOME}/index_templates /usr/share/elasticsearch/index_templates
-ln -s ${ES_HOME}/index_patterns /usr/share/elasticsearch/index_patterns
-ln -s ${ES_HOME}/kibana_ui_objects /usr/share/elasticsearch/kibana_ui_objects
 
 mkdir /elasticsearch
 mkdir -p $ES_CONF

@@ -7,16 +7,16 @@ EXPOSE 9300
 USER 0
 
 ENV ES_CLOUD_K8S_VER=5.5.2 \
-    ES_CONF=/etc/elasticsearch/ \
+    ES_CONF=/etc/elasticsearch \
     ES_JAVA_OPTS="-Dmapper.allow_dots_in_name=true" \
-    ES_HOME=/usr/share/java/elasticsearch \
+    ES_HOME=/usr/share/elasticsearch \
     ES_VER=5.5.2 \
     HOME=/opt/app-root/src \
     INSTANCE_RAM=512G \
     JAVA_VER=1.8.0 \
     JAVA_HOME=/usr/lib/jvm/jre \
     NODE_QUORUM=1 \
-    OSE_ES_VER=2.4.4.16 \
+    OSE_ES_VER=5.5.2.1 \
     PROMETHEUS_EXPORTER_VER=5.5.2.0 \
     PLUGIN_LOGLEVEL=INFO \
     RECOVER_AFTER_NODES=1 \
@@ -25,7 +25,7 @@ ENV ES_CLOUD_K8S_VER=5.5.2 \
     RELEASE_STREAM=origin
 
 ARG ES_CLOUD_K8S_VER=5.5.2
-ARG OSE_ES_VER=2.4.4.16
+ARG OSE_ES_VER=5.5.2.1
 ARG ES_CLOUD_K8S_URL
 ARG OSE_ES_URL
 ARG PROMETHEUS_EXPORTER_URL
@@ -39,24 +39,32 @@ LABEL io.k8s.description="Elasticsearch container for EFK aggregated logging sto
 
 ADD elasticsearch.repo /etc/yum.repos.d/elasticsearch.repo
 # install the RPMs in a separate step so it can be cached
-RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch && \
+RUN rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch && \
+    yum install -y centos-release-scl && \
     yum install -y --setopt=tsflags=nodocs \
+                rh-maven33 \
                 java-${JAVA_VER}-openjdk-headless \
+                elasticsearch-${ES_VER} \
                 PyYAML && \
     yum update -y && \
     yum clean all
+
+ADD openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip /
+ENV OSE_ES_URL=file:///openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip
+ENV PROMETHEUS_EXPORTER_URL=https://distfiles.compuscene.net/elasticsearch/elasticsearch-prometheus-exporter-5.5.2.0.zip
 
 ADD sgconfig/ ${HOME}/sgconfig/
 ADD index_templates/ ${ES_HOME}/index_templates/
 ADD index_patterns/ ${ES_HOME}/index_patterns/
 ADD kibana_ui_objects/ ${ES_HOME}/kibana_ui_objects/
 ADD probe/ ${ES_HOME}/probe/
+ADD lib /tmp/lib
 ADD run.sh prep-install.${RELEASE_STREAM} install.sh ${HOME}/
 COPY utils/** /usr/local/bin/
-RUN ln -s /usr/local/bin/logging ${HOME}/logging
-ENV OSE_ES_URL=file:///openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip
-ADD openshift-elasticsearch-plugin-5.5.2.1-SNAPSHOT.zip /
-RUN ${HOME}/install.sh
+RUN ln -s /usr/local/bin/logging ${HOME}/logging && \
+    ${HOME}/install.sh && \
+    yum erase -y rh-maven33 && \
+    rm -rf /tmp/lib
 
 WORKDIR ${HOME}
 USER 1000
