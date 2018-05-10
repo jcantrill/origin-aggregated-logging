@@ -27,13 +27,18 @@ RUN rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch && \
     yum clean all
 
 ADD scripts/* ${APP_HOME}/
-ADD config ${APP_HOME}/settings
+ADD settings ${APP_HOME}/settings
 RUN mkdir -p ${PATH_DATA} && \
     mkdir -p ${PATH_CONFIG} && \
     mkdir -p ${PATH_LOGS} && \
-    chmod -R og+w ${APP_HOME}
+    chmod -R og+w ${APP_HOME} && \
+    PLUGINS="logstash-input-file  \
+             logstash-output-stdout" && \
+    for p in ${PLUGINS}; do \
+      ${LS_HOME}/bin/logstash-plugin install ${p} ; \
+    done
+ADD config.d/* ${PATH_CONFIG}/
 
-USER 1000
 WORKDIR ${APP_HOME}
 CMD ["sh", "./run.sh"]
 
