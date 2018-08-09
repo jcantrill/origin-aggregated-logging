@@ -1,0 +1,108 @@
+#!/bin/bash
+#
+# Copyright 2018 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -e
+source "logging"
+
+info "Starting migration $0"
+
+history_doc='.openshift/migration/0010-cleanup-project-index-patterns'
+migrated=$(es_util --query=$history_doc)
+migrated=$(echo $migrated | python -c "import json; import sys; r=json.load(sys.stdin); print(r['found'] if 'found' in r else 'False')")
+if [ "${migrated}" == "True" ] ; then
+  info "Skipping $0 since migration already performed"
+  exit 0
+fi
+
+function get_scroll_id(){
+  echo $1 | python -c  '
+import json
+import sys
+resp = json.load(sys.stdin)
+print resp["_scroll_id"]
+'
+}
+
+function get_hits(){
+  echo $1 | python -c  '
+import json
+import sys
+resp = json.load(sys.stdin)
+print resp["hits"]["total"]
+'
+}
+
+function get_ids(){
+echo $1 | python -c  "
+import json
+import sys
+import re
+pattern = re.compile(\"^project\..*\..*\.\*\")
+resp = json.load(sys.stdin)
+out = []
+for r in resp['hits']['hits']:
+  _id = r['_id']
+  if pattern.match(_id):
+    out.append(r['_id'])
+print (' ').join(out)
+"
+}
+
+payload=$(mktemp /tmp/openshift-migration.XXXXXX)
+
+scroll_ids=()
+size=2
+
+
+response=$(es_util --query=".kibana/index-pattern/_search?scroll=1m&size=$size" -XGET -d '{"stored_fields": ["_id"]}')
+tot_hits=$(get_hits "$response")
+tot_fetches=$(( $tot_hits / $size + 1 ))
+counter=0
+while [ $counter -lt $tot_fetches ]; do
+  scroll_id=$(get_scroll_id "$response")
+  scroll_ids+=($scroll_id)
+  for id in $(get_ids "$response") ; do
+    echo "{\"delete\":{\"_index\":\".kibana\", \"_type\":\"index-pattern\", \"_id\":\"$id\"}}" >> $payload
+  done
+  let counter+=1
+  response=$(es_util --query="_search/scroll" -XPOST -d "{\"scroll\":\"1m\",\"scroll_id\":\"$scroll_id\"}")
+done
+
+# delete scroll ids
+for sid in $scoll_ids; do
+  es_util --query="_search/scroll" -XDELETE -d "{\"scroll_id\":\"$sid\"}" -H"content-type:application/json"
+done
+if es_util --query="_bulk" -XPOST -d "@$payload" -H"content-type:application/json" ; then
+  debug "Bulk deleted index-patterns"
+else
+  exit 1
+fi
+
+if es_util --query="_bulk" -XPOST -d "@$payload" -H"content-type:application/json" ; then
+  debug "Bulk deleted index-patterns"
+else
+  exit 1
+fi
+
+if es_util --query="$history_doc" -XPUT -d "{\"migration_date\":\"$(date)\"}" -H"content-type:application/json" ; then
+  debug "Created $history_doc"
+else
+  error "Unable to create $history_doc"
+  exit 1
+fi
+
+info "Migration $0 complete"
