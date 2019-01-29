@@ -36,6 +36,7 @@ RUN mkdir -p ${HOME} && mkdir -p /etc/fluent/plugin && \
         'elasticsearch:<6' \
         fluentd:${FLUENTD_VERSION} \
         fluent-plugin-concat \
+        fluent-plugin-loki \
         fluent-plugin-elasticsearch \
         fluent-plugin-kubernetes_metadata_filter \
         fluent-plugin-multi-format-parser \
