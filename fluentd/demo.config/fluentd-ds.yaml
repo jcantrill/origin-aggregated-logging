@@ -46,7 +46,7 @@ spec:
           mountPath: /var/lib/docker
           readOnly: true
         - name: config
-          mountPath: /etc/fluent
+          mountPath: /etc/ocp
           readOnly: true
         - name: dockerhostname
           mountPath: /etc/docker-hostname
