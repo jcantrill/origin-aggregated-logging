@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo ">>>>>>>>> Starting loki fluentd"
 export MERGE_JSON_LOG=${MERGE_JSON_LOG:-true}
 CFG_DIR=/etc/fluent/configs.d
 ENABLE_PROMETHEUS_ENDPOINT=${ENABLE_PROMETHEUS_ENDPOINT:-"true"}
