@@ -22,7 +22,7 @@ if [ ! -d $dirname ] ; then
     mkdir -p $dirname
 fi
 
-fluentdargs="--no-supervisor -c /etc/ocp/fluentd.conf"
+fluentdargs="--no-supervisor -c /etc/ocp/fluent.conf"
 # find the sniffer class file
 sniffer=$( gem contents fluent-plugin-elasticsearch|grep elasticsearch_simple_sniffer.rb )
 if [ -z "$sniffer" ] ; then
