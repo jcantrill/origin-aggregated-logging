@@ -72,12 +72,6 @@ else
     exit 1
 fi
 
-if [ -n "${ES_URL:-}" ] ; then
-  ELASTICSEARCH_URL="${ES_URL}"
-fi
-if [ -z "${ELASTICSEARCH_URL:-}" ] ; then
-  ELASTICSEARCH_URL="https://${ES_HOST:-localhost}:${ES_PORT:-9200}"
-fi
 update_config_from_env_vars ${KIBANA_CONF_DIR}
 
 echo "Using NODE_OPTIONS: '${NODE_OPTIONS:-}' Memory setting is in MB"

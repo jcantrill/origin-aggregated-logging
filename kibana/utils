@@ -55,7 +55,6 @@ update_config_from_env_vars() {
       elasticsearch.tribe.ssl.verify
       elasticsearch.tribe.url
       elasticsearch.tribe.username
-      elasticsearch.url
       elasticsearch.username
       kibana.defaultAppId
       kibana.index
@@ -97,7 +96,6 @@ update_config_from_env_vars() {
   conf_file=${conf_dir}/kibana.yml
   echo "#The following values dynamically added from environment variable overrides:"
   for kibana_var in ${kibana_vars[*]}; do
-      # 'elasticsearch.url' -> 'ELASTICSEARCH_URL'
       env_var=$(echo ${kibana_var^^} | tr . _)
       # Indirectly lookup env var values via the name of the var.
       # REF: http://tldp.org/LDP/abs/html/bashver2.html#EX78

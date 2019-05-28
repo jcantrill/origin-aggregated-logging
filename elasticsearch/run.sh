@@ -8,6 +8,7 @@ if [ ${DEBUG:-""} = "true" ]; then
 fi
 
 source "logging"
+ES_PATH_CONF=${ES_CONF}
 
 info Begin Elasticsearch startup script
 
@@ -95,4 +96,4 @@ info "ES_JAVA_OPTS: '${ES_JAVA_OPTS}'"
 DHE_TMP_KEY_SIZE=${DHE_TMP_KEY_SIZE:-2048}
 export ES_JAVA_OPTS="${ES_JAVA_OPTS:-} -Djdk.tls.ephemeralDHKeySize=$DHE_TMP_KEY_SIZE"
 
-exec ${ES_HOME}/bin/elasticsearch -E path.conf=$ES_CONF
+exec ${ES_HOME}/bin/elasticsearch

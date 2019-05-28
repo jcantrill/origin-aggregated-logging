@@ -12,7 +12,7 @@ config=${ES_CONF}/elasticsearch.yml
 index=$(python -c "import yaml; print yaml.load(open('${config}'))['searchguard']['config_index_name']" | xargs -i sh -c "echo {}")
 
 function sgadmin {
-  ${ES_HOME}/plugins/openshift-elasticsearch/sgadmin.sh \
+  ${ES_HOME}/plugins/search-guard-6/tools/sgadmin.sh \
     -i $index \
     -h ${ES_CLUSTER_HOST} \
     -p ${ES_CLUSTER_PORT} \

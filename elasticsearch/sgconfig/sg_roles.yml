@@ -3,7 +3,29 @@ sg_role_kibana:
     - CLUSTER_MONITOR
     - CLUSTER_COMPOSITE_OPS
   indices:
+    '?kibana*':
+      '*':
+        - INDICES_ALL
+
+# For the kibana server
+sg_kibana_server:
+  readonly: true
+  cluster:
+      - CLUSTER_MONITOR
+      - CLUSTER_COMPOSITE_OPS
+      - cluster:admin/xpack/monitoring*
+      - indices:admin/template*
+  indices:
     '?kibana':
+      '*':
+        - INDICES_ALL
+    '?kibana-6':
+      '*':
+        - INDICES_ALL
+    '?reporting*':
+      '*':
+        - INDICES_ALL
+    '?monitoring*':
       '*':
         - INDICES_ALL
 

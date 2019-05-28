@@ -15,6 +15,7 @@ do
   fi
   $plugincmd install -b $es_plugin
 done
+chmod =rx ${ES_HOME}/plugins/search-guard-6/tools/sgadmin.sh
 
 #fix location from config
 if [[ "${ES_HOME}" != "/usr/share/elasticsearch" ]]; then
@@ -29,9 +30,13 @@ fi
 if [ ! -d $ES_CONF ] ; then
   mkdir -p $ES_CONF
 fi
-chmod -R og+w $ES_CONF ${ES_HOME} ${HOME} /elasticsearch
+#chmod -R og+w $ES_CONF ${ES_HOME} ${HOME} /elasticsearch
+for dir in $ES_CONF ${ES_HOME} ${HOME} /elasticsearch /etc/sysconfig/elasticsearch /var/log/elasticsearch ; do
+  chgrp -R 0 $dir
+  chmod -R g=u $dir
+  chmod -R +rw $dir
+done
 chmod -R o+rx /etc/elasticsearch
-chmod +x ${ES_HOME}/plugins/openshift-elasticsearch/sgadmin.sh
 
 # document needed by sg plugin to properly initialize
 passwd=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)

@@ -35,42 +35,59 @@ cat <<MSG
 MSG
 }
 
-while (($#))
-do
-case $1 in
-    get)
-      cmd=${1}
-      ;;
-    --doc=*)
-      doc=${1#*=}
-      ;;
-    --help|-h)
-      helpMsg
-      exit 0
-      ;;
-    --verbose|-v)
-      set -x
-      ;;
-    *)
-      echo Ignoring unknown argument $1
-      ;;
-  esac
-  shift
-done
-
-if [ -z ${cmd:-''} ] ; then
-  helpMsg
-  exit 0
-fi
-
-if [ ${cmd} == "get" ] ; then
-  if [ -z ${doc:-""} ] ; then
-    helpMsg
-    exit
-  fi
-fi
+#while (($#))
+#do
+#case $1 in
+#    get)
+#      cmd=${1}
+#      ;;
+#    --doc=*)
+#      doc=${1#*=}
+#      ;;
+#    --help|-h)
+#      helpMsg
+#      exit 0
+#      ;;
+#    --verbose|-v)
+#      set -x
+#      ;;
+#    *)
+#      echo Ignoring unknown argument $1
+#      ;;
+#  esac
+#  shift
+#done
+#
+#if [ -z ${cmd:-''} ] ; then
+#  helpMsg
+#  exit 0
+#fi
+#
+#if [ ${cmd} == "get" ] ; then
+#  if [ -z ${doc:-""} ] ; then
+#    helpMsg
+#    exit
+#  fi
+#fi
 
 config=${ES_CONF}/elasticsearch.yml
 index=$(python -c "import yaml; print yaml.load(open('${config}'))['searchguard']['config_index_name']" | xargs -i sh -c "echo {}")
 
-QUERY="${index}/${doc}/0?pretty" es_util | python -c "import sys, json, base64; r = base64.b64decode(json.load(sys.stdin)['_source']['${doc}']); print json.dumps(json.loads(r), indent=2)"
+#QUERY="${index}/${doc}/0?pretty" es_util | python -c "import sys, json, base64; r = base64.b64decode(json.load(sys.stdin)['_source']['${doc}']); print json.dumps(json.loads(r), indent=2)"
+ES_CLUSTER_HOST=${ES_CLUSTER_HOST:-"localhost"}
+ES_CLUSTER_PORT=${ES_CLUSTER_PORT:-9300}
+  ${ES_HOME}/plugins/search-guard-6/tools/sgadmin.sh \
+    -i $index \
+    -h ${ES_CLUSTER_HOST} \
+    -p ${ES_CLUSTER_PORT} \
+    -ks /etc/elasticsearch/secret/admin.jks \
+    -kst JKS \
+    -kspass kspass \
+    -ts /etc/elasticsearch/secret/truststore \
+    -tst JKS \
+    -tspass tspass \
+    -nhnv \
+    -arc \
+    -icl \
+    -r \
+    ${DEBUG:+-dg} ${@:-}
