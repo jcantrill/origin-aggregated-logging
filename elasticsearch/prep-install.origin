@@ -2,4 +2,5 @@
 if [ -z "${PROMETHEUS_EXPORTER_URL:-}" ] ; then
     PROMETHEUS_EXPORTER_URL=https://distfiles.compuscene.net/elasticsearch/elasticsearch-prometheus-exporter-${PROMETHEUS_EXPORTER_VER}.zip
 fi
-es_plugins=($PROMETHEUS_EXPORTER_URL com.floragunn:search-guard-6:6.6.2-25.0)
+SG_URL=file:///tmp/plugin/opendistro_security-0.8.0.0.zip
+es_plugins=($PROMETHEUS_EXPORTER_URL $SG_URL)

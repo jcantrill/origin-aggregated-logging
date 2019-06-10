@@ -52,6 +52,7 @@ ADD init.sh run.sh prep-install.${RELEASE_STREAM} install.sh ${HOME}/
 COPY utils/** /usr/local/bin/
 
 ARG PROMETHEUS_EXPORTER_URL=https://github.com/vvanholl/elasticsearch-prometheus-exporter/releases/download/${PROMETHEUS_EXPORTER_VER}/prometheus-exporter-${PROMETHEUS_EXPORTER_VER}.zip
+ADD opendistro_security-0.8.0.0.zip /tmp/plugin/
 ARG SG_URL
 
 RUN ln -s /usr/local/bin/logging ${HOME}/logging && \
