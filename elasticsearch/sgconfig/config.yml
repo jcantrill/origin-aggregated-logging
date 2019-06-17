@@ -1,4 +1,4 @@
-searchguard:
+opendistro_security:
   dynamic:
     http:
       xff:
@@ -15,7 +15,9 @@ searchguard:
           type: proxy
           config:
             user_header: 'x-forwarded-user'
-            role_header: 'x-forwarded-roles'
+            roles_header: 'x-forwarded-roles'
+        authentication_backend:
+          type: noop
       authentication_domain_basic_internal:
         enabled: true
         order: 1
