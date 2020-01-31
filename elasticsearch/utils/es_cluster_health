@@ -27,4 +27,4 @@ if [[ ! -z "${LEVEL:-}" ]]; then
   QUERY="$QUERY&level=$LEVEL"
 fi
 
-curl -s -k --cert /etc/elasticsearch/secret/admin-cert --key /etc/elasticsearch/secret/admin-key $QUERY
+curl -g -s -k --cert /etc/elasticsearch/secret/admin-cert --key /etc/elasticsearch/secret/admin-key $QUERY

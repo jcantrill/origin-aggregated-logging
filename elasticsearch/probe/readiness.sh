@@ -27,7 +27,7 @@ max_time=${READINESS_PROBE_TIMEOUT:-30}
 function check_if_ready() {
   path="$1"
   err_msg="$2"
-  response_code=$(curl -s --head \
+  response_code=$(curl -g -s --head \
       --cacert $secret_dir/admin-ca \
       --cert $secret_dir/admin-cert \
       --key  $secret_dir/admin-key \
