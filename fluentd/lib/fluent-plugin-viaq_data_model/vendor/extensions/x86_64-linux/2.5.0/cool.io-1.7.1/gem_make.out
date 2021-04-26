@@ -1,0 +1,44 @@
+current directory: /home/jeff.cantrill/git/origin-aggregated-logging/fluentd/lib/fluent-plugin-viaq_data_model/vendor/gems/cool.io-1.7.1/ext/iobuffer
+/home/jeff.cantrill/.rvm/rubies/ruby-2.5.7/bin/ruby -I /home/jeff.cantrill/.rvm/rubies/ruby-2.5.7/lib/ruby/site_ruby/2.5.0 -r ./siteconf20210426-3778338-bb8lhq.rb extconf.rb
+checking for main() in -lc... yes
+checking for HAVE_RB_IO_T in ruby/io.h... yes
+checking for rb_io_t.fd in ruby/io.h... yes
+creating Makefile
+
+current directory: /home/jeff.cantrill/git/origin-aggregated-logging/fluentd/lib/fluent-plugin-viaq_data_model/vendor/gems/cool.io-1.7.1/ext/iobuffer
+make "DESTDIR=" clean
+
+current directory: /home/jeff.cantrill/git/origin-aggregated-logging/fluentd/lib/fluent-plugin-viaq_data_model/vendor/gems/cool.io-1.7.1/ext/iobuffer
+make "DESTDIR="
+compiling iobuffer.c
+iobuffer.c: In function ‘IO_Buffer_read’:
+iobuffer.c:309:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+  309 |         if(length > buf->size)
+      |                   ^
+iobuffer.c: In function ‘buffer_read_frame’:
+iobuffer.c:636:35: warning: pointer targets in initialization of ‘char *’ from ‘unsigned char *’ differ in signedness [-Wpointer-sign]
+  636 |         char           *loc, *s = head->data + head->start, *e = head->data + head->end;
+      |                                   ^~~~
+iobuffer.c:636:66: warning: pointer targets in initialization of ‘char *’ from ‘unsigned char *’ differ in signedness [-Wpointer-sign]
+  636 |         char           *loc, *s = head->data + head->start, *e = head->data + head->end;
+      |                                                                  ^~~~
+iobuffer.c:632:25: warning: unused variable ‘tmp’ [-Wunused-variable]
+  632 |     struct buffer_node *tmp;
+      |                         ^~~
+iobuffer.c: In function ‘buffer_write_to’:
+iobuffer.c:712:27: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+  712 |         if (bytes_written < buf->head->end - buf->head->start) {
+      |                           ^
+iobuffer.c: In function ‘buffer_read_from’:
+iobuffer.c:764:25: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+  764 |     } while (bytes_read == nbytes);
+      |                         ^~
+iobuffer.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-self-assign’
+cc1: warning: unrecognized command line option ‘-Wno-constant-logical-operand’
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+linking shared-object iobuffer_ext.so
+
+current directory: /home/jeff.cantrill/git/origin-aggregated-logging/fluentd/lib/fluent-plugin-viaq_data_model/vendor/gems/cool.io-1.7.1/ext/iobuffer
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 iobuffer_ext.so ./.gem.20210426-3778338-153ilfn
