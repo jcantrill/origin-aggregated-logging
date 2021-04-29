@@ -17,15 +17,36 @@ Rake::TestTask.new(:base_test) do |t|
   t.warning = false
 end
 
-desc 'Benchmark test'
-Rake::TestTask.new(:benchmark) do |t|
-  # To run test for only one file (or file path pattern)
-  #  $ bundle exec rake base_test TEST=test/test_specified_path.rb
-  #  $ bundle exec rake base_test TEST=test/test_*.rb
-  t.libs << 'test'
-  t.test_files = Dir['test/benchmark/test_*.rb'].sort
-  #t.verbose = true
-  t.warning = false
+namespace :benchmark do
+  desc 'Benchmark cpu usage'
+  test_file_46 = './test/benchmark/test_filter_clo_config_46.rb'
+  test_file_app_pipeline = './test/benchmark/test_filter_app_only_pipeline.rb'
+  ENV['NODE_NAME'] = "nodeFromEnv"
+  ENV['TOT_MESSAGES'] = "200000"
+  task :cpu do
+    require "benchmark"
+    Benchmark.bm do|x|
+      x.report("CLO4.6") { 
+        require test_file_46
+       }
+      x.report("App only") { 
+        require test_file_app_pipeline
+       }
+    end
+  end
+  desc 'benchmarks a block of iterations/second'
+  task :ips do
+    require 'benchmark/ips'
+    Benchmark.ips do|x|
+      x.report("CLO4.6") { 
+        require test_file_46
+       }
+      x.report("App only") { 
+        require test_file_app_pipeline
+       }
+       x.compare!
+    end
+  end
 end
 
 desc 'Add copyright headers'

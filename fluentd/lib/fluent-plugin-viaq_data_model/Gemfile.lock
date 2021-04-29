@@ -8,6 +8,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
+    benchmark-ips (2.8.4)
     codeclimate-test-reporter (1.0.9)
       simplecov (<= 0.13)
     concurrent-ruby (1.1.8)
@@ -75,6 +76,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  benchmark-ips
   bundler
   codeclimate-test-reporter
   fluent-plugin-viaq_data_model!

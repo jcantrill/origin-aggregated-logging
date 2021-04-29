@@ -515,6 +515,7 @@ module Fluent
     end
 
     def filter(tag, time, record)
+
       if ENV['CDM_DEBUG']
         unless tag == ENV['CDM_DEBUG_IGNORE_TAG']
           log.error("input #{time} #{tag} #{record}")

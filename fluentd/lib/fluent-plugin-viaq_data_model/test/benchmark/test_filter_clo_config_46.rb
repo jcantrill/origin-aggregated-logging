@@ -16,11 +16,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#require_relative '../helper'
-require 'fluent/test'
-require 'test/unit/rr'
+# Tests default pipeline configured explicitly all log sources
+# with the assumptions:
+#  * unstructured messages
+#  * destined for elasticsearch
 
-require 'fluent/plugin/filter_viaq_data_model'
+require_relative 'benchmark_clo_runner'
 
 config_4_6 = %{ 
     elasticsearch_index_prefix_field 'viaq_index_name'
@@ -85,31 +86,19 @@ config_4_6 = %{
 
 }
 
-class BenchmarkCLOTest
-    include Fluent
+batch = { 
+  APP_CONTAINER_TAG => MESSAGES,
+}
 
-    def initialize
-      Fluent::Test.setup
-      @time = Fluent::Engine.now
-      log = Fluent::Engine.log
-      @timestamp = Time.now
-      @timestamp_str = @timestamp.utc.to_datetime.rfc3339(6)
-    #   stub(Time).now { @timestamp }
-    end
-  
-    def configure(conf = '')
-      @driver = Test::FilterTestDriver.new(ViaqDataModelFilter, '**').configure(conf, true)
-      @dlog = @driver.instance.log
-      self
-    end
-
-    def filter(tag, msg={})
-      @driver.run {
-        @driver.emit_with_tag(tag, msg, @time)
-      }.filtered
-    end
+ test = BenchmarkCLOTest.new
+ test.configure(config_4_6)
+ #all: [[tag,time,record]]
+all = test.filter(batch)
+if all.size == 0
+  raise "There must have been an error in process because the result is empty" 
 end
-
-test = BenchmarkCLOTest.new
-test.configure(config_4_6)
-puts test.filter("foo.bar", foo: "bar")
+if PRINT_SAMPLE
+  puts "Processed #{all.length} messages"
+  sample = all[0]
+  puts "filter: #{sample[0]}\ntime: #{sample[1]}\nrecord: #{sample[2]}\n"
+end
